@@ -1,0 +1,11 @@
+# repo.remote.url = http://example.com/m2
+repo.local.path = /tmp
+
+# Additional paths to add to the classpath (at end)
+dropship.additional.paths = .
+
+# Wednesday, December 19 2012
+junit\:junit = 4.10
+
+# Thursday, December 20 2012
+junit\:junit = 4.11
