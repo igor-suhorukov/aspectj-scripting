@@ -28,7 +28,11 @@ public class Expression {
         this.expression = expression;
         this.params = params;
     }
-
+    
+    public boolean isNotEmpty() {
+        return isNotEmptyExpression(this);
+    }
+    
     public static boolean isNotEmptyExpression(Expression expression) {
         return expression !=null && expression.getExpression()!=null && !expression.getExpression().trim().isEmpty();
     }

@@ -40,7 +40,7 @@ public class DefaultWeavingContext implements IWeavingContext {
      */
     public Enumeration getResources(String name) throws IOException {
         if(name!=null && !name.isEmpty()){
-            if(Utils.isMavenClassLoader()) return new Enumeration() {
+            if(Utils.isSkippedClassLoader()) return new Enumeration() {
                 //java.util.Collections.emptyEnumeration() available since 1.7
                 public boolean hasMoreElements() { return false;}
                 public Object nextElement() { throw new NoSuchElementException();}

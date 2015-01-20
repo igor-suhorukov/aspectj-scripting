@@ -1,10 +1,12 @@
 package org.aspectj.util;
 
+import org.aspectj.configuration.model.Expression;
 import org.mvel2.MVEL;
 import org.mvel2.integration.VariableResolverFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 /**
  *
@@ -18,6 +20,8 @@ public class Utils {
 
     public static final String MVEL_PREFIX = "mvel:";
     public static final String MVEL_PACKAGE_PREFIX = "org.mvel2";
+    
+    public static final String JAVAX_MANAGEMENT_REMOTE_RMI_PACKAGE = "javax.management.remote.rmi";
 
     public static Object checkMvelExpression(String source){
         if(source.startsWith(MVEL_PREFIX)){
@@ -56,15 +60,42 @@ public class Utils {
         return MVEL.compileExpression(expression);
     }
 
-    public static boolean isMavenClassLoader() {
+    public static boolean isSkippedClassLoader() {
         boolean isMavenClassLoader = false;
         StackTraceElement[] stackTrace = new Exception().getStackTrace();
         for(StackTraceElement traceElement: stackTrace){
-            if(MavenLoader.class.getName().equals(traceElement.getClassName())){
+            if(MavenLoader.class.getName().equals(traceElement.getClassName()) ||
+                    traceElement.getClassName().startsWith(JAVAX_MANAGEMENT_REMOTE_RMI_PACKAGE)){
                 isMavenClassLoader = true;
                 break;
             }
         }
         return isMavenClassLoader;
+    }
+
+    public static void fillResolveParams(Map<String, Object> resultParams, VariableResolverFactory resolverFactory1) {
+        if(resultParams!=null && resultParams.size()>0){
+            for(Map.Entry<String,Object> entry: resultParams.entrySet()){
+                resolverFactory1.createVariable(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    public static void executeExpression(Expression expression, VariableResolverFactory variableResolverFactory) {
+        if(expression!=null && expression.isNotEmpty()) {
+            fillResolveParams(expression.getResultParams(), variableResolverFactory);
+            MVEL.eval(expression.getExpression(), variableResolverFactory);
+        }
+    }
+
+    public static void registerDisposeExpression(final Expression expression, final VariableResolverFactory resolverFactory) {
+        if(expression!=null && expression.isNotEmpty()){
+            Runtime.getRuntime().addShutdownHook(new Thread(){
+                @Override
+                public void run() {
+                    executeExpression(expression, resolverFactory);
+                }
+            });
+        }
     }
 }

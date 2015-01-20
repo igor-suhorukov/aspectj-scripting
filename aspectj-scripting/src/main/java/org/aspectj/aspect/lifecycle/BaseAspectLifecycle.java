@@ -1,17 +1,18 @@
 package org.aspectj.aspect.lifecycle;
 
 import org.aspectj.configuration.AspectJDescriptor;
+import org.aspectj.configuration.model.Configuration;
 import org.aspectj.configuration.model.Expression;
+import org.aspectj.configuration.model.GlobalContext;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.util.MavenLoader;
 import org.aspectj.util.Utils;
-import org.mvel2.MVEL;
 import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -28,22 +29,39 @@ public abstract class BaseAspectLifecycle {
 
     protected BaseAspectLifecycle() {
         String aspectName = getClass().getName();
-        aspect = AspectJDescriptor.getConfiguration().getAspect(aspectName);
-        if(Expression.isNotEmptyExpression(aspect.getInit())){
-            executeLifecycleExpr(aspect.getInit());
+        Configuration configuration = AspectJDescriptor.getConfiguration();
+        if(configuration.getGlobalContext()!=null && configuration.getGlobalResolver()==null) {
+            synchronized (Configuration.class) {
+                if(configuration.getGlobalResolver()==null) {
+                    MavenLoader.prefetchDependencies(configuration.getAllAspects());
+                    if (configuration.getGlobalContext() != null) {
+                        MavenLoader.prefetch(configuration.getGlobalContext().getArtifacts());
+                    }
+                    GlobalContext globalContext = configuration.getGlobalContext();
+                    MapVariableResolverFactory globalResolver = new MapVariableResolverFactory(new HashMap<String, Object>());
+                    MavenLoader.loadArtifact(globalContext.getArtifacts(), globalResolver);
+                    Utils.executeExpression(globalContext.getInit(), globalResolver);
+                    Utils.registerDisposeExpression(globalContext.getDispose(), globalResolver);
+                    configuration.setGlobalResolver(globalResolver);
+                }
+            }
         }
+        aspect = configuration.getAspect(aspectName);
+        registerGlobalResolverContext(configuration);
+        MavenLoader.loadArtifact(aspect.getArtifacts(), resolverFactory);
+        Utils.executeExpression(aspect.getInit(), resolverFactory);
         if(Expression.isNotEmptyExpression(aspect.getProcess())){
             processScript = Utils.compileMvelExpression(aspect.getProcess().getExpression());
         } else {
             processScript = null;
         }
-        if(Expression.isNotEmptyExpression(aspect.getDispose())){
-            Runtime.getRuntime().addShutdownHook(new Thread(){
-                @Override
-                public void run() {
-                    executeLifecycleExpr(aspect.getDispose());
-                }
-            });
+        Utils.registerDisposeExpression(aspect.getDispose(), this.resolverFactory);
+    }
+
+    private void registerGlobalResolverContext(Configuration configuration) {
+        VariableResolverFactory globalResolver = configuration.getGlobalResolver();
+        if(globalResolver!=null) {
+            resolverFactory.setNextFactory(globalResolver);
         }
     }
 
@@ -70,22 +88,9 @@ public abstract class BaseAspectLifecycle {
 
     private VariableResolverFactory createProcessVariableResolver(JoinPoint pjp) {
         VariableResolverFactory variableResolverFactory = new MapVariableResolverFactory();
-        fillResolveParams(aspect.getProcess().getResultParams(), variableResolverFactory);
+        Utils.fillResolveParams(aspect.getProcess().getResultParams(), variableResolverFactory);
         variableResolverFactory.createVariable(JOIN_POINT_VARIABLE, pjp);
         variableResolverFactory.setNextFactory(resolverFactory);
         return variableResolverFactory;
-    }
-
-    private void executeLifecycleExpr(Expression expression) {
-        fillResolveParams(expression.getResultParams(), resolverFactory);
-        MVEL.eval(expression.getExpression(), resolverFactory);
-    }
-
-    private void fillResolveParams(Map<String, Object> resultParams, VariableResolverFactory resolverFactory1) {
-        if(resultParams!=null && resultParams.size()>0){
-            for(Map.Entry<String,Object> entry: resultParams.entrySet()){
-                resolverFactory1.createVariable(entry.getKey(), entry.getValue());
-            }
-        }
     }
 }

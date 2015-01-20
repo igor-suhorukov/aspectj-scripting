@@ -115,7 +115,8 @@
                     </systemPropertyVariables>
                     <argLine>-XX:+UseParallelGC -XX:-UseParallelOldGC -XX:MaxPermSize=512m -Xmx512m -Xms512m
                 -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
-                        -Dorg.aspectj.weaver.loadtime.configuration=config:file:src/test/resources/instr.json</argLine>
+                        -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=1088 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
+                        -Dorg.aspectj.weaver.loadtime.configuration=config:file:src/test/resources/instrumentation.json</argLine>
                 </configuration>
             </plugin>
         </plugins>

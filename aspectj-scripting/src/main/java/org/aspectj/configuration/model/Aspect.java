@@ -11,7 +11,7 @@ public class Aspect {
     private String name;
     private Type type;
     private String pointcut;
-    private String[] artifacts;
+    private Artifact[] artifacts;
     private Expression init;
     private Expression process;
     private Expression dispose;
@@ -19,7 +19,7 @@ public class Aspect {
     Aspect() {
     }
 
-    public Aspect(String name, Type type, String pointcut, String[] artifacts, Expression init, Expression process, Expression dispose) {
+    public Aspect(String name, Type type, String pointcut, Artifact[] artifacts, Expression init, Expression process, Expression dispose) {
         this.name = name;
         this.type = type;
         this.pointcut = pointcut;
@@ -41,7 +41,7 @@ public class Aspect {
         return type;
     }
 
-    public String[] getArtifacts() {
+    public Artifact[] getArtifacts() {
         return artifacts;
     }
 

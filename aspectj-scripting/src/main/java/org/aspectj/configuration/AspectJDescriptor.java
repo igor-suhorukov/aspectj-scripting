@@ -46,7 +46,6 @@ public class AspectJDescriptor {
         } else {
             aspects = configuration.currentAspects(Utils.checkMvelExpression(instanceFilter).toString());
         }
-        //TODO MavenLoader.prefetchDependencies(aspects);
         String aopXmlContent = generate(aspects);
         return writeAopXml(aopXmlContent);
     }
@@ -92,9 +91,9 @@ public class AspectJDescriptor {
             } else {
                 configuration = ConfigurationLoader.fromXml(configurationContent);
             }
+            Configuration.validateConfiguration(configuration);
             AspectJDescriptor.configuration = configuration;
         }
-        Configuration.validateConfiguration(configuration);
         return configuration;
     }
 }

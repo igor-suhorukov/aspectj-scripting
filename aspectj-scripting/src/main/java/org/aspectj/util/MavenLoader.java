@@ -1,7 +1,10 @@
 package org.aspectj.util;
 
 import com.github.smreed.dropship.MavenClassLoader;
+import org.aspectj.configuration.model.Artifact;
 import org.aspectj.configuration.model.Aspect;
+import org.aspectj.configuration.model.ClassRef;
+import org.mvel2.integration.VariableResolverFactory;
 
 import java.net.URLClassLoader;
 import java.util.Collection;
@@ -36,16 +39,16 @@ public class MavenLoader {
         return classLoader.loadClass(className);
     }
 
-    public static void prefetch(String[] gavs){
-        if(gavs==null) return;
-        for(String gav: gavs){
-            prefetch(gav);
+    public static void prefetch(Artifact[] artifacts){
+        if(artifacts==null) return;
+        for(Artifact artifact: artifacts){
+            prefetch(artifact);
         }
     }
 
-    public static void prefetch(String gav){
-        if(gav==null) return;
-        getClassLoader(gav);
+    public static void prefetch(Artifact artifact){
+        if(artifact==null) return;
+        getClassLoader(artifact.getArtifact());
     }
 
     public static void prefetchDependencies(Collection<Aspect> aspects) {
@@ -55,4 +58,21 @@ public class MavenLoader {
         }
     }
 
+    public static void loadArtifact(Artifact[] artifacts, VariableResolverFactory variableResolverFactory) {
+        if(artifacts!=null){
+            for(Artifact artifact: artifacts){
+                    URLClassLoader classLoader = getClassLoader(artifact.getArtifact());
+                    ClassRef[] classRefs = artifact.getClassRefs();
+                    for(ClassRef classRef: classRefs){
+                        try {
+                            Class<?> aClass = classLoader.loadClass(classRef.getClassName());
+                            variableResolverFactory.createVariable(classRef.getVariable(), aClass);
+                        } catch (ClassNotFoundException e) {
+                            throw new IllegalArgumentException("Class '"+classRef.getClassName()
+                                    +"' not found in artifact: "+artifact.getArtifact());
+                        }
+                    }
+            }
+        }
+    }
 }

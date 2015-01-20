@@ -87,9 +87,6 @@
         <init>
             <expression>System.out.println(&quot;Start jvm&quot;)</expression>
         </init>
-        <process>
-            <expression>System.out.println("before around "+server2a); System.out.println("after around "+server1a); joinPoint.proceed(); </expression>
-        </process>
         <dispose>
             <expression>System.out.println(&quot;Stop jvm&quot;)</expression>
         </dispose>

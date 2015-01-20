@@ -1,6 +1,7 @@
 package org.aspectj.configuration.model;
 
 import org.aspectj.util.Utils;
+import org.mvel2.integration.VariableResolverFactory;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -15,13 +16,16 @@ import java.util.*;
 public class Configuration {
     private Map<String,String[]> aspectByInstance;
     private Collection<Aspect> aspects;
+    private GlobalContext globalContext;
+    private volatile transient VariableResolverFactory globalResolver;
 
     Configuration() {
     }
 
-    public Configuration(Map<String, String[]> aspectByInstance, Collection<Aspect> aspects) {
+    public Configuration(Map<String, String[]> aspectByInstance, Collection<Aspect> aspects, GlobalContext globalContext) {
         this.aspectByInstance = aspectByInstance;
         this.aspects = aspects;
+        this.globalContext = globalContext;
     }
 
     public Collection<Aspect> currentAspects(String filter){
@@ -60,6 +64,18 @@ public class Configuration {
             }
         }
         throw new IllegalArgumentException("Aspect configuration '"+name+"' not found");
+    }
+
+    public GlobalContext getGlobalContext() {
+        return globalContext;
+    }
+
+    public VariableResolverFactory getGlobalResolver() {
+        return globalResolver;
+    }
+
+    public void setGlobalResolver(VariableResolverFactory globalResolver) {
+        this.globalResolver = globalResolver;
     }
 
     public static void validateConfiguration(Configuration configuration) {
@@ -104,6 +120,8 @@ public class Configuration {
                 }
             }
         }
+        //TODO validate artifact not null, variable name uniq on aspect level
+        //TODO validate globalContext
     }
 
     private static void validateExpression(Aspect aspect, Expression expression, String expressionName) {
