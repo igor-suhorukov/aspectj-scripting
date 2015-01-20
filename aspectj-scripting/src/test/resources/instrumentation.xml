@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration>
+    <aspectByInstance>
+        <entry>
+            <key>HOST_NAME</key>
+            <value>
+                <item>org.aspect.testing.Aspect1</item>
+                <item>org.aspect.testing.Aspect6</item>
+            </value>
+        </entry>
+    </aspectByInstance>
+    <aspects>
+        <name>org.aspect.testing.Aspect1</name>
+        <type>AROUND</type>
+        <pointcut>execution(* org.apache.commons.math.transform.FastFourierTransformer.*(..))</pointcut>
+        <artifacts>
+            <artifact>org.eclipse.jetty:jetty-server:8.1.16.v20140903</artifact>
+            <classRefs>
+                <variable>server1</variable>
+                <className>org.eclipse.jetty.server.Server</className>
+            </classRefs>
+            <classRefs>
+                <variable>server2</variable>
+                <className>org.eclipse.jetty.server.Server</className>
+            </classRefs>
+        </artifacts>
+        <init>
+            <expression>serverClass = org.aspectj.util.MavenLoader.loadClass(&quot;org.eclipse.jetty:jetty-server:8.1.16.v20140903&quot;,&quot;org.eclipse.jetty.server.Server&quot;);
+                server = new serverClass(8888);
+                server.start()
+            </expression>
+        </init>
+        <process>
+            <expression>System.out.println(&quot;process: &quot;+joinPoint);joinPoint.proceed();</expression>
+            <params>
+                <entry>
+                    <key>prop1</key>
+                    <value>mvel: java.net.InetAddress.getLocalHost().getHostName()</value>
+                </entry>
+                <entry>
+                    <key>prop3</key>
+                    <value>ccc</value>
+                </entry>
+                <entry>
+                    <key>prop4</key>
+                    <value>mvel:&quot;test &quot; + System.currentTimeMillis() + &quot; | &quot; + Math.random()</value>
+                </entry>
+            </params>
+        </process>
+        <dispose>
+            <expression>server.stop()</expression>
+            <params>
+                <entry>
+                    <key>prop2</key>
+                    <value>bbb</value>
+                </entry>
+                <entry>
+                    <key>prop1</key>
+                    <value>aaa</value>
+                </entry>
+                <entry>
+                    <key>prop3</key>
+                    <value>ccc</value>
+                </entry>
+                <entry>
+                    <key>prop4</key>
+                    <value>mvel:&quot;test &quot; + System.currentTimeMillis() + &quot; | &quot; + Math.random()</value>
+                </entry>
+            </params>
+        </dispose>
+    </aspects>
+    <aspects>
+        <name>org.aspect.testing.Aspect6</name>
+        <type>AROUND</type>
+        <pointcut>execution(public static void main(String[]))</pointcut>
+        <artifacts>
+            <artifact>org.eclipse.jetty:jetty-server:8.1.16.v20140903</artifact>
+            <classRefs>
+                <variable>server1</variable>
+                <className>org.eclipse.jetty.server.Server</className>
+            </classRefs>
+            <classRefs>
+                <variable>server2</variable>
+                <className>org.eclipse.jetty.server.Server</className>
+            </classRefs>
+        </artifacts>
+        <init>
+            <expression>System.out.println(&quot;Start jvm&quot;)</expression>
+        </init>
+        <process>
+            <expression>System.out.println("before around "+server2a); System.out.println("after around "+server1a); joinPoint.proceed(); </expression>
+        </process>
+        <dispose>
+            <expression>System.out.println(&quot;Stop jvm&quot;)</expression>
+        </dispose>
+    </aspects>
+    <aspects>
+        <name>org.aspect.testing.Aspect2</name>
+        <type>AFTER_THROWING</type>
+        <pointcut>execution(* org.apache.commons.math.transform.FastFourierTransformer.*(..))</pointcut>
+        <artifacts>
+            <artifact>org.eclipse.jetty:jetty-server:8.1.16.v20140903</artifact>
+            <classRefs>
+                <variable>server1</variable>
+                <className>org.eclipse.jetty.server.Server</className>
+            </classRefs>
+            <classRefs>
+                <variable>server2</variable>
+                <className>org.eclipse.jetty.server.Server</className>
+            </classRefs>
+        </artifacts>
+        <process>
+            <expression>System.out.println(&quot;!!!process: &quot;+joinPoint);</expression>
+        </process>
+        <dispose>
+            <expression> &quot; &quot;</expression>
+            <params>
+                <entry>
+                    <key>prop2</key>
+                    <value>bbb</value>
+                </entry>
+                <entry>
+                    <key>prop1</key>
+                    <value>aaa</value>
+                </entry>
+                <entry>
+                    <key>prop3</key>
+                    <value>ccc</value>
+                </entry>
+                <entry>
+                    <key>prop4</key>
+                    <value>mvel:&quot;test &quot; + System.currentTimeMillis() + &quot; | &quot; + Math.random()</value>
+                </entry>
+            </params>
+        </dispose>
+    </aspects>
+    <globalContext>
+        <artifacts>
+            <artifact>org.eclipse.jetty:jetty-server:8.1.16.v20140903</artifact>
+            <classRefs>
+                <variable>server1a</variable>
+                <className>org.eclipse.jetty.server.Server</className>
+            </classRefs>
+            <classRefs>
+                <variable>server2a</variable>
+                <className>org.eclipse.jetty.server.Server</className>
+            </classRefs>
+        </artifacts>
+        <init>
+            <expression>System.out.println(server1a)</expression>
+        </init>
+        <dispose>
+            <expression>System.out.println(server2a)</expression>
+        </dispose>
+    </globalContext>
+</configuration>
