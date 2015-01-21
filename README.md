@@ -21,6 +21,17 @@ For [example][6]:
     },
 ```
 
+Agent configuration:
+
+org.aspectj.weaver.loadtime.configuration = config:file/http: path to configuration
+org.aspectj.weaver.loadtime.configuration.debug = true / false
+org.aspectj.weaver.loadtime.configuration.filter = default - all aspects from configuration
+                                                   or any valid MVEL expression to filter aspects by "aspectByInstance/entry/key" value
+repo.remote.url = default - maven central, 
+                  or http://... valid path to other repository 
+repo.local.path = local directory to store maven artifacts
+
+
 Thanks [Steve Reed][7] for maven classloader
 
 [1]: http://en.wikipedia.org/wiki/AspectJ "AspectJ"
