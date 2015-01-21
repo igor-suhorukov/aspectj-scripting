@@ -93,6 +93,7 @@ public class AspectJDescriptor {
             }
             Configuration.validateConfiguration(configuration);
             AspectJDescriptor.configuration = configuration;
+            LOGGER.info("Shared configuration class hash: " + System.identityHashCode(AspectJDescriptor.class));
         }
         return configuration;
     }

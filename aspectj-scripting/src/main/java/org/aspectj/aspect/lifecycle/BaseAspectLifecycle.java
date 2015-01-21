@@ -13,6 +13,7 @@ import org.mvel2.integration.impl.MapVariableResolverFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  *
@@ -30,6 +31,36 @@ public abstract class BaseAspectLifecycle {
     protected BaseAspectLifecycle() {
         String aspectName = getClass().getName();
         Configuration configuration = AspectJDescriptor.getConfiguration();
+        checkConfiguration(configuration);
+        initGlobalContext(configuration);
+        aspect = configuration.getAspect(aspectName);
+        registerGlobalResolverContext(configuration);
+        MavenLoader.loadArtifact(aspect.getArtifacts(), resolverFactory);
+        Utils.executeExpression(aspect.getInit(), resolverFactory);
+        if(Expression.isNotEmptyExpression(aspect.getProcess())){
+            processScript = Utils.compileMvelExpression(aspect.getProcess().getExpression());
+        } else {
+            processScript = null;
+        }
+        Utils.registerDisposeExpression(aspect.getDispose(), this.resolverFactory);
+    }
+
+    private void checkConfiguration(Configuration configuration) {
+        if(configuration == null){
+            Exception exception = null;
+            try {
+                Class<?> loadClass = BaseAspectLifecycle.class.getClassLoader().loadClass(UUID.randomUUID().toString());
+            } catch (ClassNotFoundException e) {
+                exception = e; //Capture class loader exception
+            }
+
+            throw new IllegalStateException("Shared aspect configuration not found. " +
+                    "May be class loader isolate this aspect from loaded configuration. "+
+                    "Shared configuration class hash: " + System.identityHashCode(AspectJDescriptor.class), exception);
+        }
+    }
+
+    private void initGlobalContext(Configuration configuration) {
         if(configuration.getGlobalContext()!=null && configuration.getGlobalResolver()==null) {
             synchronized (Configuration.class) {
                 if(configuration.getGlobalResolver()==null) {
@@ -46,16 +77,6 @@ public abstract class BaseAspectLifecycle {
                 }
             }
         }
-        aspect = configuration.getAspect(aspectName);
-        registerGlobalResolverContext(configuration);
-        MavenLoader.loadArtifact(aspect.getArtifacts(), resolverFactory);
-        Utils.executeExpression(aspect.getInit(), resolverFactory);
-        if(Expression.isNotEmptyExpression(aspect.getProcess())){
-            processScript = Utils.compileMvelExpression(aspect.getProcess().getExpression());
-        } else {
-            processScript = null;
-        }
-        Utils.registerDisposeExpression(aspect.getDispose(), this.resolverFactory);
     }
 
     private void registerGlobalResolverContext(Configuration configuration) {
