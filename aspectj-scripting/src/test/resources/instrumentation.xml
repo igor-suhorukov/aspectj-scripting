@@ -23,11 +23,23 @@
                 <variable>server2</variable>
                 <className>org.eclipse.jetty.server.Server</className>
             </classRefs>
+            <resourceRefs>
+                <variable>pomProp</variable>
+                <resourceName>META-INF/maven/org.eclipse.jetty/jetty-server/pom.properties</resourceName>
+            </resourceRefs>
+            <resourceRefs>
+                <variable>pomXml</variable>
+                <resourceName>META-INF/maven/org.eclipse.jetty/jetty-server/pom.xml</resourceName>
+            </resourceRefs>
         </artifacts>
         <init>
             <expression>serverClass = org.aspectj.util.MavenLoader.loadClass(&quot;org.eclipse.jetty:jetty-server:8.1.16.v20140903&quot;,&quot;org.eclipse.jetty.server.Server&quot;);
                 server = new serverClass(8888);
-                server.start()
+                server.start();
+                System.out.println("pom prop: "+ org.apache.commons.io.IOUtils.toString(pomProp));
+                pomProp.close();
+                System.out.println("pom xml length "+org.apache.commons.io.IOUtils.toString(pomXml).length());
+                pomXml.close();
             </expression>
         </init>
         <process>

@@ -7,13 +7,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 public class Artifact {
     private String artifact;
     private ClassRef[] classRefs;
+    private ResourceRef[] resourceRefs;
 
     Artifact() {
     }
 
-    public Artifact(String artifact, ClassRef[] classRefs) {
+    public Artifact(String artifact, ClassRef[] classRefs, ResourceRef[] resourceRefs) {
         this.artifact = artifact;
         this.classRefs = classRefs;
+        this.resourceRefs = resourceRefs;
     }
 
     public String getArtifact() {
@@ -22,5 +24,9 @@ public class Artifact {
 
     public ClassRef[] getClassRefs() {
         return classRefs;
+    }
+
+    public ResourceRef[] getResourceRefs() {
+        return resourceRefs;
     }
 }

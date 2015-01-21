@@ -4,8 +4,10 @@ import com.github.smreed.dropship.MavenClassLoader;
 import org.aspectj.configuration.model.Artifact;
 import org.aspectj.configuration.model.Aspect;
 import org.aspectj.configuration.model.ClassRef;
+import org.aspectj.configuration.model.ResourceRef;
 import org.mvel2.integration.VariableResolverFactory;
 
+import java.io.InputStream;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -61,8 +63,9 @@ public class MavenLoader {
     public static void loadArtifact(Artifact[] artifacts, VariableResolverFactory variableResolverFactory) {
         if(artifacts!=null){
             for(Artifact artifact: artifacts){
-                    URLClassLoader classLoader = getClassLoader(artifact.getArtifact());
-                    ClassRef[] classRefs = artifact.getClassRefs();
+                URLClassLoader classLoader = getClassLoader(artifact.getArtifact());
+                ClassRef[] classRefs = artifact.getClassRefs();
+                if(classRefs!=null){
                     for(ClassRef classRef: classRefs){
                         try {
                             Class<?> aClass = classLoader.loadClass(classRef.getClassName());
@@ -72,6 +75,18 @@ public class MavenLoader {
                                     +"' not found in artifact: "+artifact.getArtifact());
                         }
                     }
+                }
+                ResourceRef[] resourceRefs = artifact.getResourceRefs();
+                if(resourceRefs!=null){
+                    for(ResourceRef resourceRef: resourceRefs){
+                        InputStream resourceStream = classLoader.getResourceAsStream(resourceRef.getResourceName());
+                        if(resourceStream==null){
+                            throw new IllegalArgumentException("Resource "+resourceRef.getResourceName()+
+                                    " not found in artifact: " + artifact.getArtifact());
+                        }
+                        variableResolverFactory.createVariable(resourceRef.getVariable(), resourceStream);
+                    }
+                }
             }
         }
     }
