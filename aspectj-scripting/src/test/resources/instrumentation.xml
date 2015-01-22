@@ -30,20 +30,22 @@
             <resourceRefs>
                 <variable>pomXml</variable>
                 <resourceName>META-INF/maven/org.eclipse.jetty/jetty-server/pom.xml</resourceName>
+                <useUrl>false</useUrl>
             </resourceRefs>
         </artifacts>
         <init>
-            <expression>serverClass = org.aspectj.util.MavenLoader.loadClass(&quot;org.eclipse.jetty:jetty-server:8.1.16.v20140903&quot;,&quot;org.eclipse.jetty.server.Server&quot;);
+            <expression>serverClass = org.aspectj.util.MavenLoader.loadClass("org.eclipse.jetty:jetty-server:8.1.16.v20140903","org.eclipse.jetty.server.Server");
                 server = new serverClass(8888);
                 server.start();
                 System.out.println("pom prop: "+ org.apache.commons.io.IOUtils.toString(pomProp));
-                pomProp.close();
+                System.out.println("pom prop " + pomProp.getClass());
                 System.out.println("pom xml length "+org.apache.commons.io.IOUtils.toString(pomXml).length());
+                System.out.println("pom xml " + pomXml.getClass());
                 pomXml.close();
             </expression>
         </init>
         <process>
-            <expression>System.out.println(&quot;process: &quot;+joinPoint);joinPoint.proceed();</expression>
+            <expression>System.out.println("process: "+joinPoint);joinPoint.proceed();</expression>
             <params>
                 <entry>
                     <key>prop1</key>
@@ -55,7 +57,7 @@
                 </entry>
                 <entry>
                     <key>prop4</key>
-                    <value>mvel:&quot;test &quot; + System.currentTimeMillis() + &quot; | &quot; + Math.random()</value>
+                    <value>mvel:"test " + System.currentTimeMillis() + " | " + Math.random()</value>
                 </entry>
             </params>
         </process>
@@ -76,7 +78,7 @@
                 </entry>
                 <entry>
                     <key>prop4</key>
-                    <value>mvel:&quot;test &quot; + System.currentTimeMillis() + &quot; | &quot; + Math.random()</value>
+                    <value>mvel:"test " + System.currentTimeMillis() + " | " + Math.random()</value>
                 </entry>
             </params>
         </dispose>
@@ -97,10 +99,10 @@
             </classRefs>
         </artifacts>
         <init>
-            <expression>System.out.println(&quot;Start jvm&quot;)</expression>
+            <expression>System.out.println("Start jvm")</expression>
         </init>
         <dispose>
-            <expression>System.out.println(&quot;Stop jvm&quot;)</expression>
+            <expression>System.out.println("Stop jvm")</expression>
         </dispose>
     </aspects>
     <aspects>
@@ -119,10 +121,10 @@
             </classRefs>
         </artifacts>
         <process>
-            <expression>System.out.println(&quot;!!!process: &quot;+joinPoint);</expression>
+            <expression>System.out.println("!!!process: "+joinPoint);</expression>
         </process>
         <dispose>
-            <expression> &quot; &quot;</expression>
+            <expression> " "</expression>
             <params>
                 <entry>
                     <key>prop2</key>
@@ -138,7 +140,7 @@
                 </entry>
                 <entry>
                     <key>prop4</key>
-                    <value>mvel:&quot;test &quot; + System.currentTimeMillis() + &quot; | &quot; + Math.random()</value>
+                    <value>mvel:"test " + System.currentTimeMillis() + " | " + Math.random()</value>
                 </entry>
             </params>
         </dispose>

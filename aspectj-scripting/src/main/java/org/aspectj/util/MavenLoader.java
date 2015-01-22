@@ -79,9 +79,14 @@ public class MavenLoader {
                 ResourceRef[] resourceRefs = artifact.getResourceRefs();
                 if(resourceRefs!=null){
                     for(ResourceRef resourceRef: resourceRefs){
-                        InputStream resourceStream = classLoader.getResourceAsStream(resourceRef.getResourceName());
-                        if(resourceStream==null){
-                            throw new IllegalArgumentException("Resource "+resourceRef.getResourceName()+
+                        Object resourceStream;
+                        if(resourceRef.isUseUrl()){
+                            resourceStream = classLoader.getResource(resourceRef.getResourceName());
+                        } else {
+                            resourceStream = classLoader.getResourceAsStream(resourceRef.getResourceName());
+                        }
+                        if (resourceStream == null) {
+                            throw new IllegalArgumentException("Resource " + resourceRef.getResourceName() +
                                     " not found in artifact: " + artifact.getArtifact());
                         }
                         variableResolverFactory.createVariable(resourceRef.getVariable(), resourceStream);
