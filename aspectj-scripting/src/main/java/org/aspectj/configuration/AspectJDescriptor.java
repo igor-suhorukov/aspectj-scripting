@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.aspectj.configuration.model.Aspect;
 import org.aspectj.configuration.model.Configuration;
 import org.aspectj.util.Utils;
+import org.mvel2.optimizers.OptimizerFactory;
 import org.mvel2.templates.TemplateRuntime;
 
 import java.io.*;
@@ -93,6 +94,7 @@ public class AspectJDescriptor {
             }
             Configuration.validateConfiguration(configuration);
             AspectJDescriptor.configuration = configuration;
+            OptimizerFactory.setDefaultOptimizer(OptimizerFactory.SAFE_REFLECTIVE); // to avoid ClassNotFoundException in maven classes
             LOGGER.info("Shared configuration class hash: " + System.identityHashCode(AspectJDescriptor.class));
         }
         return configuration;

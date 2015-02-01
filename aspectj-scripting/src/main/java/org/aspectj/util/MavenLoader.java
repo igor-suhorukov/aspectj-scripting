@@ -67,11 +67,13 @@ public class MavenLoader {
                 ClassRef[] classRefs = artifact.getClassRefs();
                 if(classRefs!=null){
                     for(ClassRef classRef: classRefs){
+                        String className = classRef.getClassName();
                         try {
-                            Class<?> aClass = classLoader.loadClass(classRef.getClassName());
+                            Class<?> aClass = classLoader.loadClass(className);
                             variableResolverFactory.createVariable(classRef.getVariable(), aClass);
+                            variableResolverFactory.createVariable(className, aClass);//fix MVEL class resolution
                         } catch (ClassNotFoundException e) {
-                            throw new IllegalArgumentException("Class '"+classRef.getClassName()
+                            throw new IllegalArgumentException("Class '"+ className
                                     +"' not found in artifact: "+artifact.getArtifact());
                         }
                     }
