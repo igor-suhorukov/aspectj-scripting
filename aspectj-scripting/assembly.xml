@@ -21,7 +21,7 @@ Reloacate classes to avoid class loading conflicts
             <useStrictFiltering>true</useStrictFiltering>
             <unpack>true</unpack>
             <includes>
-                <include>org.aspectj.agent:aspectj-scripting</include>
+                <include>com.github.igor-suhorukov:aspectj-scripting</include>
                 <include>com.github.smreed:dropship</include>
                 <include>org.mvel:mvel2</include>
                 <include>com.google.code.gson:gson</include>
