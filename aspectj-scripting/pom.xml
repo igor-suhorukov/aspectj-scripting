@@ -30,7 +30,7 @@
     </licenses>
     <scm>
         <url>https://github.com/igor-suhorukov/aspectj-scripting</url>
-        <connection>https://github.com/igor-suhorukov/aspectj-scripting.git</connection>
+        <connection>scm:git:https://github.com/igor-suhorukov/aspectj-scripting.git</connection>
     </scm>
     <properties>
         <aspectj.version>1.7.4</aspectj.version>
