@@ -31,7 +31,7 @@
     <scm>
         <url>https://github.com/igor-suhorukov/aspectj-scripting</url>
         <connection>scm:git:git://github.com/igor-suhorukov/aspectj-scripting.git</connection>
-        <developerConnection>scm:git:git@github.com:igor-suhorukov/aspectj-scripting.git</developerConnection>
+        <developerConnection>scm:git:git@github.com/igor-suhorukov/aspectj-scripting.git</developerConnection>
     </scm>
     <properties>
         <aspectj.version>1.7.4</aspectj.version>
