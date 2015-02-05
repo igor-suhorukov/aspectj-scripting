@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
@@ -9,7 +8,7 @@
     <groupId>com.github.igor-suhorukov</groupId>
     <artifactId>aspectj-scripting</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>AspectJ scripting agent</name>
     <description>Scripting extension for AspectJ agent. Allow java bytecode instrumentation at jvm startup
         by using MVEL expression and execute code from maven artifacts</description>
@@ -63,7 +62,7 @@
             <!--to avoid https://jira.codehaus.org/browse/MSHADE-183 use apache-maven-3.0.5-->
             <groupId>com.github.smreed</groupId>
             <artifactId>dropship</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <!-- Considered as alternative: https://ops4j1.jira.com/wiki/display/paxurl/Mvn+Protocol -->
         </dependency>
         <dependency>
