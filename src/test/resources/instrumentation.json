@@ -1,0 +1,131 @@
+{
+  "aspectByInstance": {
+    "HOST_NAME": [
+      "org.aspect.testing.Aspect1",
+      "org.aspect.testing.Aspect6"
+    ]
+  },
+  "aspects": [
+    {
+      "name": "org.aspect.testing.Aspect1",
+      "type": "AROUND",
+      "pointcut": "execution(* org.apache.commons.math.transform.FastFourierTransformer.*(..))",
+      "artifacts": [
+        {
+          "artifact": "org.eclipse.jetty:jetty-server:8.1.16.v20140903",
+          "classRefs": [
+            {
+              "variable": "server1",
+              "className": "org.eclipse.jetty.server.Server"
+            },
+            {
+              "variable": "server2",
+              "className": "org.eclipse.jetty.server.Server"
+            }
+          ]
+        }
+      ],
+      "init": {
+        "expression": "serverClass \u003d org.aspectj.util.MavenLoader.loadClass(\"org.eclipse.jetty:jetty-server:8.1.16.v20140903\",\"org.eclipse.jetty.server.Server\");\n        server \u003d new serverClass(8888);\n        server.start()"
+      },
+      "process": {
+        "expression": "System.out.println(\"process: \"+joinPoint);joinPoint.proceed();",
+        "params": {
+          "prop1": "mvel: java.net.InetAddress.getLocalHost().getHostName()",
+          "prop3": "ccc",
+          "prop4": "mvel:\"test \" + System.currentTimeMillis() + \" | \" + Math.random()"
+        }
+      },
+      "dispose": {
+        "expression": "server.stop()",
+        "params": {
+          "prop2": "bbb",
+          "prop1": "aaa",
+          "prop3": "ccc",
+          "prop4": "mvel:\"test \" + System.currentTimeMillis() + \" | \" + Math.random()"
+        }
+      }
+    },
+    {
+      "name": "org.aspect.testing.Aspect6",
+      "type": "AROUND",
+      "pointcut": "execution(public static void main(String[]))",
+      "artifacts": [
+        {
+          "artifact": "org.eclipse.jetty:jetty-server:8.1.16.v20140903",
+          "classRefs": [
+            {
+              "variable": "server1",
+              "className": "org.eclipse.jetty.server.Server"
+            },
+            {
+              "variable": "server2",
+              "className": "org.eclipse.jetty.server.Server"
+            }
+          ]
+        }
+      ],
+      "init": {
+        "expression": "System.out.println(\"Start jvm\")"
+      },
+      "dispose": {
+        "expression": "System.out.println(\"Stop jvm\")"
+      }
+    },
+    {
+      "name": "org.aspect.testing.Aspect2",
+      "type": "AFTER_THROWING",
+      "pointcut": "execution(* org.apache.commons.math.transform.FastFourierTransformer.*(..))",
+      "artifacts": [
+        {
+          "artifact": "org.eclipse.jetty:jetty-server:8.1.16.v20140903",
+          "classRefs": [
+            {
+              "variable": "server1",
+              "className": "org.eclipse.jetty.server.Server"
+            },
+            {
+              "variable": "server2",
+              "className": "org.eclipse.jetty.server.Server"
+            }
+          ]
+        }
+      ],
+      "process": {
+        "expression": "System.out.println(\"!!!process: \"+joinPoint);"
+      },
+      "dispose": {
+        "expression": " \" \"",
+        "params": {
+          "prop2": "bbb",
+          "prop1": "aaa",
+          "prop3": "ccc",
+          "prop4": "mvel:\"test \" + System.currentTimeMillis() + \" | \" + Math.random()"
+        }
+      }
+    }
+  ],
+  "globalContext": {
+    "artifacts": [
+      {
+        "artifact": "org.eclipse.jetty:jetty-server:8.1.16.v20140903",
+        "classRefs": [
+          {
+            "variable": "server1a",
+            "className": "org.eclipse.jetty.server.Server"
+          },
+          {
+            "variable": "server2a",
+            "className": "org.eclipse.jetty.server.Server"
+          }
+        ]
+      }
+    ],
+    "init": {
+      "expression": "System.out.println(\"GLOBAL INIT\")"
+    },
+    "dispose": {
+      "expression": "System.out.println(\"GLOBAL DISPOSE\")"
+    }
+  }
+}
