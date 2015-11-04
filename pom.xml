@@ -119,24 +119,6 @@
                             <pattern>org.apache.commons</pattern>
                             <shadedPattern>org.aspectj.apache.commons</shadedPattern>
                         </relocation>
-<!--
-                        <relocation>
-                            <pattern>org.apache.blel</pattern>
-                            <shadedPattern>org.aspectj.apache.blel</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.apache.http</pattern>
-                            <shadedPattern>org.aspectj.apache.http</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.aopalliance</pattern>
-                            <shadedPattern>org.aspectj.aopalliance</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.codehaus</pattern>
-                            <shadedPattern>org.aspectj.codehaus</shadedPattern>
-                        </relocation>
--->
                     </relocations>
                     <filters>
                         <filter>
