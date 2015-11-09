@@ -2,8 +2,8 @@ package org.aspectj.aspect.lifecycle;
 
 import org.aspectj.configuration.AspectJDescriptor;
 import org.aspectj.configuration.model.Configuration;
+import org.aspectj.configuration.model.ContextUtils;
 import org.aspectj.configuration.model.Expression;
-import org.aspectj.configuration.model.GlobalContext;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.util.MavenLoader;
@@ -32,7 +32,6 @@ public abstract class BaseAspectLifecycle {
         String aspectName = getClass().getName();
         Configuration configuration = AspectJDescriptor.getConfiguration();
         checkConfiguration(configuration);
-        initGlobalContext(configuration);
         aspect = configuration.getAspect(aspectName);
         registerGlobalResolverContext(configuration);
         MavenLoader.loadArtifact(aspect.getArtifacts(), resolverFactory);
@@ -57,25 +56,6 @@ public abstract class BaseAspectLifecycle {
             throw new IllegalStateException("Shared aspect configuration not found. " +
                     "May be class loader isolate this aspect from loaded configuration. "+
                     "Shared configuration class hash: " + System.identityHashCode(AspectJDescriptor.class), exception);
-        }
-    }
-
-    private void initGlobalContext(Configuration configuration) {
-        if(configuration.getGlobalContext()!=null && configuration.getGlobalResolver()==null) {
-            synchronized (Configuration.class) {
-                if(configuration.getGlobalResolver()==null) {
-                    MavenLoader.prefetchDependencies(configuration.getAllAspects());
-                    if (configuration.getGlobalContext() != null) {
-                        MavenLoader.prefetch(configuration.getGlobalContext().getArtifacts());
-                    }
-                    GlobalContext globalContext = configuration.getGlobalContext();
-                    MapVariableResolverFactory globalResolver = new MapVariableResolverFactory(new HashMap<String, Object>());
-                    MavenLoader.loadArtifact(globalContext.getArtifacts(), globalResolver);
-                    Utils.executeExpression(globalContext.getInit(), globalResolver);
-                    Utils.registerDisposeExpression(globalContext.getDispose(), globalResolver);
-                    configuration.setGlobalResolver(globalResolver);
-                }
-            }
         }
     }
 
@@ -111,6 +91,7 @@ public abstract class BaseAspectLifecycle {
         VariableResolverFactory variableResolverFactory = new MapVariableResolverFactory();
         Utils.fillResolveParams(aspect.getProcess().getResultParams(), variableResolverFactory);
         variableResolverFactory.createVariable(JOIN_POINT_VARIABLE, pjp);
+        variableResolverFactory.createVariable(ContextUtils.VARIABLE_RESOLVER, variableResolverFactory);
         variableResolverFactory.setNextFactory(resolverFactory);
         return variableResolverFactory;
     }

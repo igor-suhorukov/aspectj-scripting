@@ -3,6 +3,7 @@ package org.aspectj.configuration;
 import org.apache.commons.io.IOUtils;
 import org.aspectj.configuration.model.Aspect;
 import org.aspectj.configuration.model.Configuration;
+import org.aspectj.configuration.model.ContextUtils;
 import org.aspectj.util.Utils;
 import org.mvel2.optimizers.OptimizerFactory;
 import org.mvel2.templates.TemplateRuntime;
@@ -25,11 +26,11 @@ public class AspectJDescriptor {
     public static String generate(Collection<Aspect> aspects){
         return TemplateRuntime.eval(
         "<aspectj>\n\t<aspects>\n" +
-            "@foreach{aspect : aspects} " +
+            "@if{aspects!=null}@foreach{aspect : aspects} " +
                 "\t\t<concrete-aspect name=\"@{aspect.name}\" extends=\"@{aspect.type.aspectName}\">" +
                 "<pointcut name=\"pointcutExpression\" expression=\"@{aspect.pointcut}\"/>" +
                 "</concrete-aspect>\n" +
-            "@end{}" +
+            "@end{} @end{}" +
             "\t</aspects>\n" +
             "@if{Boolean.getBoolean(\""+ Utils.DEBUG_OPTION +"\")}\t<weaver options=\"-verbose  -showWeaveInfo\"/>\n@end{}" +
         "</aspectj>\n",
@@ -95,6 +96,8 @@ public class AspectJDescriptor {
             Configuration.validateConfiguration(configuration);
             AspectJDescriptor.configuration = configuration;
             OptimizerFactory.setDefaultOptimizer(OptimizerFactory.SAFE_REFLECTIVE); // to avoid ClassNotFoundException in maven classes
+
+            ContextUtils.initGlobalContext(configuration);
             LOGGER.info("Shared configuration class hash: " + System.identityHashCode(AspectJDescriptor.class));
         }
         return configuration;

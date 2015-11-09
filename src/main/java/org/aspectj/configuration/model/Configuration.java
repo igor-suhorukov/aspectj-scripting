@@ -1,6 +1,5 @@
 package org.aspectj.configuration.model;
 
-import org.aspectj.util.MavenLoader;
 import org.aspectj.util.Utils;
 import org.mvel2.integration.VariableResolverFactory;
 
@@ -17,6 +16,7 @@ import java.util.*;
 public class Configuration {
     private Map<String,String[]> aspectByInstance;
     private Collection<Aspect> aspects;
+    Artifact[] artifacts;
     private GlobalContext globalContext;
     private volatile transient VariableResolverFactory globalResolver;
 
@@ -58,6 +58,10 @@ public class Configuration {
         return aspects;
     }
 
+    Artifact[] getArtifacts() {
+        return artifacts;
+    }
+
     public Aspect getAspect(String name){
         for(Aspect aspect: aspects){
             if(name.equals(aspect.getName())){
@@ -82,26 +86,28 @@ public class Configuration {
     public static void validateConfiguration(Configuration configuration) {
         Collection<Artifact> artifacts = new ArrayList<Artifact>();
         Collection<Aspect> aspects = configuration.getAllAspects();
-        Set<String> uniqAspectNames = new HashSet<String>(aspects.size());
-        for(Aspect aspect: aspects){
-            if(Utils.isEmpty(aspect.getName())){
-                throw new IllegalArgumentException("Aspect name is empty");
+        Set<String> uniqAspectNames = new HashSet<String>(aspects==null ? 0 : aspects.size());
+        if(aspects!=null && aspects.size() > 0){
+            for(Aspect aspect: aspects){
+                if(Utils.isEmpty(aspect.getName())){
+                    throw new IllegalArgumentException("Aspect name is empty");
+                }
+                uniqAspectNames.add(aspect.getName());
+                if(Utils.isEmpty(aspect.getPointcut())){
+                    throw new IllegalArgumentException("Pointcut expression is empty. Aspect: " + aspect.getName());
+                }
+                if(aspect.getType()==null){
+                    throw new IllegalArgumentException("Type is empty. Aspect: " + aspect.getName());
+                }
+                validateExpression(aspect, aspect.getInit(), "init");
+                validateExpression(aspect, aspect.getProcess(), "process");
+                validateExpression(aspect, aspect.getDispose(), "dispose");
+                addArtifacts(artifacts, aspect.getArtifacts());
             }
-            uniqAspectNames.add(aspect.getName());
-            if(Utils.isEmpty(aspect.getPointcut())){
-                throw new IllegalArgumentException("Pointcut expression is empty. Aspect: " + aspect.getName());
+            if(uniqAspectNames.size()!=aspects.size()){
+                throw new IllegalArgumentException("Unique aspect names: "
+                        + uniqAspectNames.size() + ", total aspect count "+aspects.size());
             }
-            if(aspect.getType()==null){
-                throw new IllegalArgumentException("Type is empty. Aspect: " + aspect.getName());
-            }
-            validateExpression(aspect, aspect.getInit(), "init");
-            validateExpression(aspect, aspect.getProcess(), "process");
-            validateExpression(aspect, aspect.getDispose(), "dispose");
-            addArtifacts(artifacts, aspect.getArtifacts());
-        }
-        if(uniqAspectNames.size()!=aspects.size()){
-            throw new IllegalArgumentException("Unique aspect names: "
-                    + uniqAspectNames.size() + ", total aspect count "+aspects.size());
         }
         Map<String,String[]> aspectByInstance = configuration.getAspectByInstance();
         Set<Map.Entry<String, String[]>> entries = aspectByInstance.entrySet();
@@ -128,7 +134,7 @@ public class Configuration {
             addArtifacts(artifacts, globalContext.getArtifacts());
         }
         if(!artifacts.isEmpty()){
-            MavenLoader.prefetch(artifacts.toArray(new Artifact[artifacts.size()]));
+            configuration.artifacts = artifacts.toArray(new Artifact[artifacts.size()]);
         }
         //TODO validate artifact not null, variable name uniq on aspect level
         //TODO validate globalContext
@@ -136,9 +142,7 @@ public class Configuration {
 
     private static void addArtifacts(Collection<Artifact> resultArtifacts, Artifact[] sourceArtifacts) {
         if(sourceArtifacts !=null){
-            for(Artifact artifact: sourceArtifacts) {
-                resultArtifacts.add(artifact);
-            }
+            Collections.addAll(resultArtifacts, sourceArtifacts);
         }
     }
 
