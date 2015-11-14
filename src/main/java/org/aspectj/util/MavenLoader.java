@@ -23,7 +23,7 @@ public class MavenLoader {
      */
     public static URLClassLoader getClassLoader(String gav) {
         String mavenRepository = System.getProperty(Utils.CONFIGURATION_MAVEN_REPOSITORY);
-        com.github.igorsuhorukov.smreed.dropship.MavenClassLoader.ClassLoaderBuilder classLoaderBuilder;
+        com.github.igorsuhorukov.smreed.dropship.ClassLoaderBuilder classLoaderBuilder;
         if(mavenRepository == null || mavenRepository.isEmpty()){
             LOGGER.info("Using maven central repository");
             classLoaderBuilder = com.github.igorsuhorukov.smreed.dropship.MavenClassLoader.usingCentralRepo();
