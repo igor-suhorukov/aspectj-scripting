@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration>
+    <aspects>
+        <name>org.aspect.testing.Aspect6</name>
+        <type>AFTER</type>
+        <pointcut>execution(* ???.main(..))</pointcut>
+        <artifacts/>
+    </aspects>
+</configuration>

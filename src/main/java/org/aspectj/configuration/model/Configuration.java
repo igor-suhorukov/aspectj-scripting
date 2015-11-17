@@ -1,5 +1,6 @@
 package org.aspectj.configuration.model;
 
+import com.github.igorsuhorukov.eclipse.aether.artifact.DefaultArtifact;
 import org.aspectj.util.Utils;
 import org.mvel2.integration.VariableResolverFactory;
 
@@ -102,6 +103,7 @@ public class Configuration {
                 validateExpression(aspect, aspect.getInit(), "init");
                 validateExpression(aspect, aspect.getProcess(), "process");
                 validateExpression(aspect, aspect.getDispose(), "dispose");
+                validateArtifact("Aspect: " + aspect.getName(), aspect.getArtifacts());
                 addArtifacts(artifacts, aspect.getArtifacts());
             }
             if(uniqAspectNames.size()!=aspects.size()){
@@ -131,6 +133,7 @@ public class Configuration {
         }
         GlobalContext globalContext = configuration.getGlobalContext();
         if(globalContext!=null){
+            validateArtifact("Global context", globalContext.getArtifacts());
             addArtifacts(artifacts, globalContext.getArtifacts());
         }
         if(!artifacts.isEmpty()){
@@ -138,6 +141,23 @@ public class Configuration {
         }
         //TODO validate artifact not null, variable name uniq on aspect level
         //TODO validate globalContext
+    }
+
+    private static void validateArtifact(String context, Artifact[] artifacts) {
+        if(artifacts!=null && artifacts.length>0){
+            for (int idx = 0; idx < artifacts.length; idx++) {
+                Artifact artifact = artifacts[idx];
+                String gav = artifact.getArtifact();
+                if (gav == null || gav.trim().isEmpty()) {
+                    throw new IllegalArgumentException(String.format("Empty artifact value (group:artifact:value) at %s[%d]", context, idx));
+                }
+                try {
+                    new DefaultArtifact(gav);
+                } catch (IllegalArgumentException e){
+                    throw new IllegalArgumentException(String.format("%s at %s[%d] ", e.getMessage(), context, idx));
+                }
+            }
+        }
     }
 
     private static void addArtifacts(Collection<Artifact> resultArtifacts, Artifact[] sourceArtifacts) {

@@ -76,7 +76,7 @@ public class AspectJDescriptor {
         return configuration;
     }
 
-    private static synchronized Configuration loadConfiguration(String configurationLocation) throws IOException {
+    static synchronized Configuration loadConfiguration(String configurationLocation) throws IOException {
         if(configuration==null){
             LOGGER.info("Fetch configuration from "+configurationLocation);
             InputStream configStream = new URL(configurationLocation).openStream();

@@ -153,17 +153,43 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.17</version>
-                <configuration>
-                    <reuseForks>false</reuseForks>
-                    <forkCount>1</forkCount>
-                    <argLine>-Xms512m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=256m</argLine>
-                    <systemPropertyVariables>
-                    </systemPropertyVariables>
-                    <argLine>-XX:+UseParallelGC -XX:-UseParallelOldGC -XX:MaxPermSize=512m -Xmx512m -Xms512m
-                -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
-                        -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=1088 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
-                        -Dorg.aspectj.weaver.loadtime.configuration=config:file:src/test/resources/instrumentation.json</argLine>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>agent</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <reuseForks>false</reuseForks>
+                            <forkCount>1</forkCount>
+                            <argLine>-Xms512m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=256m</argLine>
+                            <systemPropertyVariables>
+                            </systemPropertyVariables>
+                            <excludes>
+                                <exclude>**/ArtifactConfigurationTest.java</exclude>
+                            </excludes>
+                            <argLine>-XX:+UseParallelGC -XX:-UseParallelOldGC -XX:MaxPermSize=512m -Xmx512m -Xms512m
+                                -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
+                                -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=1088 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
+                                -Dorg.aspectj.weaver.loadtime.configuration=config:file:src/test/resources/instrumentation.json</argLine>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unit</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/ArtifactConfigurationTest.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+
+
             </plugin>
         </plugins>
     </build>
