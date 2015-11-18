@@ -13,9 +13,9 @@ import java.util.Map;
  */
 public class Utils {
 
-    public static final String CONFIGURATION_PREFIX = "org.aspectj.weaver.loadtime.configuration.";
-    public static final String DEBUG_OPTION = CONFIGURATION_PREFIX + "debug";
-    public static final String CONFIGURATION_FILTER = CONFIGURATION_PREFIX + "filter";
+    public static final String CONFIGURATION_PREFIX = "org.aspectj.weaver.loadtime.configuration";
+    public static final String DEBUG_OPTION = CONFIGURATION_PREFIX + ".debug";
+    public static final String CONFIGURATION_FILTER = CONFIGURATION_PREFIX + ".filter";
     public static final String CONFIGURATION_MAVEN_REPOSITORY = "repo.remote.url";
 
     public static final String MVEL_PREFIX = "mvel:";

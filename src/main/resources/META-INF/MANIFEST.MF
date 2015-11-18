@@ -1,6 +1,6 @@
 Name: org/aspectj/weaver/
 Specification-Title: AspectJ Weaver Classes
 Implementation-Title: org.aspectj.weaver
-Premain-Class: org.aspectj.weaver.loadtime.Agent
-Agent-Class: org.aspectj.weaver.loadtime.Agent
+Premain-Class: org.aspectj.weaver.loadtime.AjScriptingAgent
+Agent-Class: org.aspectj.weaver.loadtime.AjScriptingAgent
 Can-Redefine-Classes: true
