@@ -8,7 +8,7 @@
     <groupId>com.github.igor-suhorukov</groupId>
     <artifactId>aspectj-scripting</artifactId>
     <packaging>jar</packaging>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3</version>
     <name>AspectJ scripting agent</name>
     <description>Scripting extension for AspectJ agent. Allow java bytecode instrumentation at jvm startup
         by using MVEL expression and execute code from maven artifacts</description>
