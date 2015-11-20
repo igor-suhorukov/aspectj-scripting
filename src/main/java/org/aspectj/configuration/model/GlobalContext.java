@@ -8,14 +8,16 @@ public class GlobalContext {
     private Artifact[] artifacts;
     private Expression init;
     private Expression dispose;
+    private TimerTask[] timerTasks;
 
     GlobalContext() {
     }
 
-    public GlobalContext(Artifact[] artifacts, Expression init, Expression dispose) {
+    public GlobalContext(Artifact[] artifacts, Expression init, Expression dispose, TimerTask[] timerTasks) {
         this.artifacts = artifacts;
         this.init = init;
         this.dispose = dispose;
+        this.timerTasks = timerTasks;
     }
 
     public Artifact[] getArtifacts() {
@@ -28,5 +30,9 @@ public class GlobalContext {
 
     public Expression getDispose() {
         return dispose;
+    }
+
+    public TimerTask[] getTimerTasks() {
+        return timerTasks;
     }
 }

@@ -133,6 +133,7 @@ public class Configuration {
         }
         GlobalContext globalContext = configuration.getGlobalContext();
         if(globalContext!=null){
+            validateTimerTasks(globalContext);
             validateArtifact("Global context", globalContext.getArtifacts());
             addArtifacts(artifacts, globalContext.getArtifacts());
         }
@@ -141,6 +142,27 @@ public class Configuration {
         }
         //TODO validate artifact not null, variable name uniq on aspect level
         //TODO validate globalContext
+    }
+
+    private static void validateTimerTasks(GlobalContext globalContext) {
+        TimerTask[] timerTasks = globalContext.getTimerTasks();
+        if(timerTasks !=null && timerTasks.length>0){
+            for (int idx = 0; idx < timerTasks.length; idx++) {
+                TimerTask timerTask = timerTasks[idx];
+                if(timerTask.getJobExpression()==null || timerTask.getJobExpression().trim().isEmpty()){
+                    throw new IllegalArgumentException(String.format("TimerTask[%d] with empty jobExpression", idx));
+                }
+                if(timerTask.getFirstTime()==null && timerTask.getDelay()==null && timerTask.getPeriod()==null){
+                    String msg = String.format("TimerTask[%d] with empty parameters firstTime, delay, period", idx);
+                    throw new IllegalArgumentException(msg);
+                }
+                if(timerTask.getFirstTime()==null && timerTask.getDelay()==null){
+                    String msg = String.format(
+                            "TimerTask[%d]. Property must be defined with value: either 'firstTime' or 'delay' ", idx);
+                    throw new IllegalArgumentException(msg);
+                }
+            }
+        }
     }
 
     private static void validateArtifact(String context, Artifact[] artifacts) {

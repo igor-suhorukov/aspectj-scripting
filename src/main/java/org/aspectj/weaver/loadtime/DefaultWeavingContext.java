@@ -1,6 +1,5 @@
 package org.aspectj.weaver.loadtime;
 
-import org.aspectj.configuration.AspectJDescriptor;
 import org.aspectj.util.Utils;
 import org.aspectj.weaver.bcel.BcelWeakClassLoaderReference;
 import org.aspectj.weaver.loadtime.definition.Definition;
@@ -11,6 +10,7 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Use in non-OSGi environment
@@ -22,8 +22,6 @@ public class DefaultWeavingContext implements IWeavingContext {
     protected BcelWeakClassLoaderReference loaderRef;
     private String shortName;
     private static Trace trace = TraceFactory.getTraceFactory().getTrace(DefaultWeavingContext.class);
-
-    private static final String AOP_FROM_CONFIGURATION_PREFIX = "config:";
 
     /**
      * Construct a new WeavingContext to use the specified ClassLoader This is the constructor which should be used.
@@ -40,19 +38,19 @@ public class DefaultWeavingContext implements IWeavingContext {
      */
     public Enumeration getResources(String name) throws IOException {
         if(name!=null && !name.isEmpty()){
-            if(Utils.isSkippedClassLoader()) return new Enumeration() {
-                //java.util.Collections.emptyEnumeration() available since 1.7
-                public boolean hasMoreElements() { return false;}
-                public Object nextElement() { throw new NoSuchElementException();}
-            };
+            if(Utils.isSkippedClassLoader()){
+                return java.util.Collections.emptyEnumeration();
+            }
             String resource = Utils.checkMvelExpression(name).toString();
             URL url = null;
             if(resource.startsWith("http")){
                 url = new URL(resource);
-            } else if(resource.startsWith(AOP_FROM_CONFIGURATION_PREFIX)){
-                String configuration = resource.substring(AOP_FROM_CONFIGURATION_PREFIX.length());
-                String configurationLocation = Utils.checkMvelExpression(configuration).toString();
-                url = AspectJDescriptor.renderConfigurationToTemporaryFile(configurationLocation);
+            } else {
+                try {
+                    url = ConfigurationHolder.configuration.get(resource);
+                } catch (ExecutionException e) {
+                    throw new IOException(e);
+                }
             }
             if(url!=null) return Collections.enumeration(Arrays.asList(url));
         }
