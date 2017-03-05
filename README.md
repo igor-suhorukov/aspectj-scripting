@@ -23,7 +23,7 @@ For [example][6]:
 
 Agent configuration:
 
-* `org.aspectj.weaver.loadtime.configuration` = `config-file` - file/URL (http://) path to configuration
+* `org.aspectj.weaver.loadtime.configuration` = `config:file/http` choose "config:file" or "config:http"
 * `org.aspectj.weaver.loadtime.configuration.debug` = `true / false`
 * `org.aspectj.weaver.loadtime.configuration.filter` = `default - all aspects from configuration`
                                                    or any valid MVEL expression to filter aspects by "aspectByInstance/entry/key" value
